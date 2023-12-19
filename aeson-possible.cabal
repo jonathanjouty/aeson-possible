@@ -14,19 +14,28 @@ build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 -- extra-source-files:
 
+common extensions
+    default-extensions:
+      DeriveFunctor
+      DeriveGeneric
+      OverloadedStrings
+
 common warnings
     ghc-options: -Wall
 
 library
+    import:           extensions
     import:           warnings
-    exposed-modules:  MyLib
+    exposed-modules:  Data.Aeson.Possible
     -- other-modules:
     -- other-extensions:
-    build-depends:    base ^>=4.17.2.0
+    build-depends:    base ^>=4.17.2.0,
+                      aeson == 2.2.*,
     hs-source-dirs:   src
     default-language: Haskell2010
 
 test-suite aeson-possible-test
+    import:           extensions
     import:           warnings
     default-language: Haskell2010
     -- other-modules:
@@ -36,4 +45,10 @@ test-suite aeson-possible-test
     main-is:          Main.hs
     build-depends:
         base ^>=4.17.2.0,
-        aeson-possible
+        aeson-possible,
+        aeson,
+        tasty == 1.*,
+        QuickCheck,
+        tasty-hunit,
+        tasty-quickcheck,
+        tasty-quickcheck-laws,
