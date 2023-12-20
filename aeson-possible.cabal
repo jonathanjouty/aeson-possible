@@ -23,7 +23,16 @@ common extensions
       OverloadedStrings
 
 common warnings
-    ghc-options: -Wall
+    ghc-options:
+      -Weverything
+      -Wno-unsafe
+      -Wno-implicit-prelude
+      -Wno-missing-import-lists
+      -Wno-missing-safe-haskell-mode
+      -Wno-missing-kind-signatures
+      -Wno-missing-local-signatures
+      -Wno-monomorphism-restriction
+      -Wno-all-missed-specialisations
 
 library
     import:           extensions
