@@ -2,17 +2,20 @@ cabal-version:      3.0
 name:               aeson-possible
 version:            0.1.0.0
 synopsis:           Possible values for aeson
--- description:
+description:        Three-valued possible types for use with aeson.
+                    Useful for use in PATCH endpoints.
 homepage:           https://github.com/jonathanjouty/aeson-possible
 license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Jonathan Jouty
 maintainer:         me@jonathanjouty.com
--- copyright:
 category:           Data
 build-type:         Simple
 extra-doc-files:    CHANGELOG.md
--- extra-source-files:
+tested-with:
+  GHC == 9.4
+   || == 9.6
+   || == 9.8
 
 common extensions
     default-extensions:
@@ -38,10 +41,9 @@ library
     import:           extensions
     import:           warnings
     exposed-modules:  Data.Aeson.Possible
-    -- other-modules:
-    -- other-extensions:
-    build-depends:    base >= 4.17 && < 5,
-                      aeson == 2.2.*,
+    build-depends:
+        base >= 4.17 && < 5,
+        aeson == 2.2.*,
     hs-source-dirs:   src
     default-language: Haskell2010
 
@@ -49,8 +51,6 @@ test-suite aeson-possible-test
     import:           extensions
     import:           warnings
     default-language: Haskell2010
-    -- other-modules:
-    -- other-extensions:
     type:             exitcode-stdio-1.0
     hs-source-dirs:   test
     main-is:          Main.hs
@@ -63,3 +63,7 @@ test-suite aeson-possible-test
         tasty-hunit,
         tasty-quickcheck,
         tasty-quickcheck-laws,
+
+source-repository head
+  type:     git
+  location: git@github.com:jonathanjouty/aeson-possible.git
