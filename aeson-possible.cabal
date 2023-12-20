@@ -18,6 +18,8 @@ common extensions
     default-extensions:
       DeriveFunctor
       DeriveGeneric
+      DerivingVia
+      GeneralizedNewtypeDeriving
       OverloadedStrings
 
 common warnings
