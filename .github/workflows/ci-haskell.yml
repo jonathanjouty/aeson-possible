@@ -1,0 +1,17 @@
+on: [push]
+
+name: Build & Test
+
+jobs:
+  runhaskell:
+    name: Build & Test
+    runs-on: ubuntu-latest # or macOS-latest, or windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: haskell-actions/setup@v2
+        with:
+          ghc-version: '9.4'
+          cabal-version: '3.10'
+      - run: cabal configure --enable-tests
+      - run: cabal build all
+      - run: cabal run aeson-possible-test
