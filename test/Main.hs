@@ -34,8 +34,8 @@ laws =
     testGroup
         "Laws"
         [ testEqLaws (Proxy :: Proxy (A_Possible Bool))
-        , testMonoidLaws (Proxy :: Proxy (A_Possible (Sum Int)))
         , testSemigroupLaws (Proxy :: Proxy (A_Possible (Sum Int)))
+        , testMonoidLaws (Proxy :: Proxy (A_Possible (Sum Int)))
         , testFunctorLaws
             (Proxy :: Proxy (A_Possible))
             (Proxy :: Proxy Int)
