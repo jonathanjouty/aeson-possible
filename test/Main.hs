@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Main (main) where
 
 import Test.QuickCheck.Gen as Gen
@@ -6,6 +8,7 @@ import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck as QC
 import Test.Tasty.QuickCheck.Laws
 
+import Control.Applicative
 import Data.Aeson
 import Data.Aeson.Possible
 import Data.Typeable
@@ -19,7 +22,7 @@ tests = testGroup "Tests" [laws, unitTests]
 
 newtype A_Possible a = A_Possible {unwrap :: Possible a}
     deriving stock (Show, Generic, Functor)
-    deriving newtype (Eq, Applicative)
+    deriving newtype (Eq, Applicative, Alternative)
 
 instance (Arbitrary a) => Arbitrary (A_Possible a) where
     arbitrary =
@@ -47,6 +50,19 @@ laws =
             (Proxy :: Proxy Int)
             (Proxy :: Proxy Int)
             (\_ fu1 fu2 -> fu1 == fu2)
+        , testGroup
+            "Alternative is as documented"
+            -- Should not need testing as it is quite simple, but just to be sure
+            -- and guard against regressions
+            [ QC.testProperty "PATCH new data" $ \(new :: Int) (old :: A_Possible Int) ->
+                let newP = A_Possible (HaveData new)
+                 in (newP <|> old) === newP
+            , QC.testProperty "PATCH sets null" $ \(old :: A_Possible Bool) ->
+                let aNull = A_Possible HaveNull
+                 in (aNull <|> old) === aNull
+            , QC.testProperty "PATCH did not change data" $ \(old :: A_Possible Bool) ->
+                (A_Possible Missing <|> old) === old
+            ]
         ]
 
 data TestData = TestData
