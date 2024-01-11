@@ -8,7 +8,6 @@ import Test.Tasty.QuickCheck.Laws
 
 import Data.Aeson
 import Data.Aeson.Possible
-import Data.Monoid (Sum)
 import Data.Typeable
 import GHC.Generics (Generic)
 
@@ -20,7 +19,7 @@ tests = testGroup "Tests" [laws, unitTests]
 
 newtype A_Possible a = A_Possible {unwrap :: Possible a}
     deriving stock (Show, Generic, Functor)
-    deriving newtype (Eq, Semigroup, Monoid, Applicative)
+    deriving newtype (Eq, Applicative)
 
 instance (Arbitrary a) => Arbitrary (A_Possible a) where
     arbitrary =
@@ -34,8 +33,6 @@ laws =
     testGroup
         "Laws"
         [ testEqLaws (Proxy :: Proxy (A_Possible Bool))
-        , testSemigroupLaws (Proxy :: Proxy (A_Possible (Sum Int)))
-        , testMonoidLaws (Proxy :: Proxy (A_Possible (Sum Int)))
         , testFunctorLaws
             (Proxy :: Proxy (A_Possible))
             (Proxy :: Proxy Int)

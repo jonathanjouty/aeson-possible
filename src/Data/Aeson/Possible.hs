@@ -18,16 +18,6 @@ instance (Eq a) => Eq (Possible a) where
     HaveData a == HaveData b = a == b
     HaveData _ == _ = False
 
-instance (Semigroup a) => Semigroup (Possible a) where
-    Missing <> x = x
-    x <> Missing = x
-    HaveNull <> _ = HaveNull
-    _ <> HaveNull = HaveNull
-    HaveData a <> HaveData b = HaveData $ a <> b
-
-instance (Monoid a) => Monoid (Possible a) where
-    mempty = Missing
-
 instance Applicative Possible where
     pure = HaveData
     (HaveData f) <*> (HaveData x) = HaveData (f x)
