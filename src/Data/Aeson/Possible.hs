@@ -16,8 +16,10 @@ instance (Eq a) => Eq (Possible a) where
 
 instance (Semigroup a) => Semigroup (Possible a) where
     Missing <> x = x
+    x <> Missing = x
     HaveNull <> _ = HaveNull
-    HaveData a <> _ = HaveData a
+    _ <> HaveNull = HaveNull
+    HaveData a <> HaveData b = HaveData $ a <> b
 
 instance (Monoid a) => Monoid (Possible a) where
     mempty = Missing
@@ -25,10 +27,10 @@ instance (Monoid a) => Monoid (Possible a) where
 instance Applicative Possible where
     pure = HaveData
     (HaveData f) <*> (HaveData x) = HaveData (f x)
-    (HaveData _) <*> Missing = Missing
-    Missing <*> Missing = Missing
-    Missing <*> (HaveData _) = Missing
-    _ <*> _ = HaveNull
+    HaveNull <*> _ = HaveNull
+    _ <*> HaveNull = HaveNull
+    Missing <*> _ = Missing
+    _ <*> Missing = Missing
 
 instance (ToJSON a) => ToJSON (Possible a) where
     toJSON = toJSON . fromPossible
