@@ -1,3 +1,25 @@
+{- |
+Three-valued possible types for use with `aeson`.
+
+Useful for use in PATCH endpoints: use in records which have 'ToJSON' and
+'FromJSON' instances.
+
+See the README for suggested usage.
+
+The 'Alternative' instance can be used to update a record (with PATCH data) as
+the LHS data is kept unless it is missing:
+
+@
+-- PATCH uses new data
+'HaveData' new \<|\> old == 'HaveData' new
+
+-- PATCH sets null
+'HaveNull' \<|\> old == 'HaveNull'
+
+-- PATCH did not change data
+'Missing' \<|\> old == old
+@
+-}
 module Data.Aeson.Possible (
     Possible (..),
     toMaybe,
@@ -27,8 +49,9 @@ instance Applicative Possible where
     Missing <*> _ = Missing
     _ <*> Missing = Missing
 
--- | Similar to the `Alternative Maybe` instance, picks the leftmost 'HaveData'
--- value.
+{- | Similar to the @Alternative Maybe@ instance, picks the leftmost 'HaveData'
+value.
+-}
 instance Alternative Possible where
     empty = Missing
     HaveNull <|> _ = HaveNull
@@ -49,6 +72,7 @@ instance (ToJSON a) => ToJSON (Possible a) where
     omitField HaveNull = False
     omitField (HaveData _) = False
 
+-- | Uses `omittedField` to default to 'Missing'
 instance (FromJSON a) => FromJSON (Possible a) where
     parseJSON Null = pure HaveNull
     parseJSON v = fmap pure . parseJSON $ v
