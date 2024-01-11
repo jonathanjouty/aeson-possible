@@ -36,6 +36,13 @@ instance Applicative Possible where
     Missing <*> _ = Missing
     _ <*> Missing = Missing
 
+{- | Uses 'toMaybe' to implement `toJSON` and `toEncoding`, and `aeson`'s
+'omitField' to specify when the field should be left out.
+
+/Note/ that unless the 'Possible' value is encoded as an object field it
+will be `null` even when you have a 'Missing' value.
+_e.g._ `[Missing, HaveNull, HaveData 42]` will be encoded as `[null,null,42]`
+-}
 instance (ToJSON a) => ToJSON (Possible a) where
     toJSON = toJSON . toMaybe
     toEncoding = toEncoding . toMaybe
