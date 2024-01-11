@@ -1,4 +1,8 @@
-module Data.Aeson.Possible (Possible (..), fromPossible) where
+module Data.Aeson.Possible (
+    Possible (..),
+    toMaybe,
+    fromMaybeMaybe,
+) where
 
 import Data.Aeson
 import GHC.Generics (Generic)
@@ -33,8 +37,8 @@ instance Applicative Possible where
     _ <*> Missing = Missing
 
 instance (ToJSON a) => ToJSON (Possible a) where
-    toJSON = toJSON . fromPossible
-    toEncoding = toEncoding . fromPossible
+    toJSON = toJSON . toMaybe
+    toEncoding = toEncoding . toMaybe
     omitField Missing = True
     omitField HaveNull = False
     omitField (HaveData _) = False
@@ -44,7 +48,12 @@ instance (FromJSON a) => FromJSON (Possible a) where
     parseJSON v = fmap pure . parseJSON $ v
     omittedField = Just Missing
 
-fromPossible :: Possible a -> Maybe a
-fromPossible Missing = Nothing
-fromPossible HaveNull = Nothing
-fromPossible (HaveData a) = Just a
+toMaybe :: Possible a -> Maybe a
+toMaybe Missing = Nothing
+toMaybe HaveNull = Nothing
+toMaybe (HaveData a) = Just a
+
+fromMaybeMaybe :: Maybe (Maybe a) -> Possible a
+fromMaybeMaybe Nothing = Missing
+fromMaybeMaybe (Just Nothing) = HaveNull
+fromMaybeMaybe (Just (Just a)) = HaveData a

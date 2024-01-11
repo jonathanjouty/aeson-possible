@@ -69,11 +69,31 @@ unitTests :: TestTree
 unitTests =
     testGroup
         "Unit Tests"
-        [ testCase "Decoding works as expected" $
-            eitherDecode json @?= Right value
-        , testCase "Encoding works as expected" $
-            encode value @?= json
+        [ let
+            objJson = "{\"b\":null,\"c\":true}"
+            objValue = TestData{a = Missing, b = HaveNull, c = HaveData True}
+           in
+            testGroup
+                "Object encoding and decoding"
+                [ testCase "Decoding works as expected" $
+                    eitherDecode objJson @?= Right objValue
+                , testCase "Encoding works as expected" $
+                    encode objValue @?= objJson
+                ]
+        , -- Encoding in non-objects leads to "null" as it must encode to something!
+          -- Encoding other constructors are covered by object tests
+          testGroup
+            "Encoding not in an object"
+            [ testCase "Bare `Missing`" $
+                encode (Missing :: Possible Int) @?= "null"
+            , testCase "List of Possible values" $
+                encode ([HaveNull, Missing, HaveData True]) @?= "[null,null,true]"
+            ]
+        , testGroup
+            "Bare decoding"
+            [ testCase "Decode null" $
+                eitherDecode "null" @?= Right (HaveNull :: Possible Bool)
+            , testCase "Decode value" $
+                eitherDecode "true" @?= Right (HaveData True)
+            ]
         ]
-  where
-    json = "{\"b\":null,\"c\":true}"
-    value = TestData{a = Missing, b = HaveNull, c = HaveData True}
