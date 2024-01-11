@@ -4,6 +4,7 @@ module Data.Aeson.Possible (
     fromMaybeMaybe,
 ) where
 
+import Control.Applicative
 import Data.Aeson
 import GHC.Generics (Generic)
 
@@ -25,6 +26,14 @@ instance Applicative Possible where
     _ <*> HaveNull = HaveNull
     Missing <*> _ = Missing
     _ <*> Missing = Missing
+
+-- | Similar to the `Alternative Maybe` instance, picks the leftmost 'HaveData'
+-- value.
+instance Alternative Possible where
+    empty = Missing
+    HaveNull <|> _ = HaveNull
+    Missing <|> r = r
+    l@(HaveData _) <|> _ = l
 
 {- | Uses 'toMaybe' to implement `toJSON` and `toEncoding`, and `aeson`'s
 'omitField' to specify when the field should be left out.
