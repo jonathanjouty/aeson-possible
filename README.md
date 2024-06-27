@@ -24,16 +24,19 @@ data MyRecord = MyRecord
     deriving (Generic)
 ```
 
-and then make sure to use `omitNothingFields = True` if you are generically
-deriving your To/FromJSON instances
+and then make sure to use the correct options if you are generically deriving
+your To/FromJSON instances:
 
 ```hs
-instance FromJSON MyRecord where
-    parseJSON = genericParseJSON $ defaultOptions{omitNothingFields = True}
-
 instance ToJSON MyRecord where
     toJSON = genericToJSON $ defaultOptions{omitNothingFields = True}
+
+instance FromJSON MyRecord where
+    parseJSON = genericParseJSON $ defaultOptions{allowOmittedFields = True}
 ```
+
+Note that `omitNothingFields` affects `ToJSON`, and `allowOmittedFields`
+affects `FromJSON`. You can, of course, also set both to `True`.
 
 If you are creating instances any other way, see `aeson`'s documentation for
 how to make use of `omitField` and `omittedField`.
