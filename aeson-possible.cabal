@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               aeson-possible
-version:            0.1.0.0
+version:            0.1.0.1
 synopsis:           Possible values for aeson
 description:        Three-valued possible types for use with aeson.
                     Useful for use in PATCH endpoints.
@@ -8,8 +8,8 @@ homepage:           https://github.com/jonathanjouty/aeson-possible
 license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Jonathan Jouty
-maintainer:         me@jonathanjouty.com
-category:           Data
+maintainer:         Jonathan Jouty <me@jonathanjouty.com>
+category:           Data, Web, JSON
 build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 tested-with:
