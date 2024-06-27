@@ -73,7 +73,7 @@ data TestData = TestData
     deriving stock (Show, Generic, Eq)
 
 instance FromJSON TestData where
-    parseJSON = genericParseJSON $ defaultOptions{omitNothingFields = True}
+    parseJSON = genericParseJSON $ defaultOptions{allowOmittedFields = True}
 
 instance ToJSON TestData where
     toJSON = genericToJSON $ defaultOptions{omitNothingFields = True}
