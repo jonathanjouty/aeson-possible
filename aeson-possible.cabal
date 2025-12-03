@@ -16,6 +16,8 @@ tested-with:
   GHC == 9.4
    || == 9.6
    || == 9.8
+   || == 9.10
+   || == 9.12
 
 common extensions
     default-extensions:
