@@ -22,10 +22,13 @@ the LHS data is kept unless it is missing:
 -}
 module Data.Aeson.Possible (
     Possible (..),
+
     -- * Utility functions
+
     -- ** Equivalent expressiveness
     toMaybeMaybe,
     fromMaybeMaybe,
+
     -- ** With different expressiveness
     toMaybe,
     fromMaybe,
@@ -100,9 +103,10 @@ toMaybe Missing = Nothing
 toMaybe HaveNull = Nothing
 toMaybe (HaveData a) = Just a
 
--- | Analogous to @Maybe@'s @fromMaybe@: first parameter is a default to use.
---
--- /Note:/ You can use @fromMaybe (HaveData a)@, even though that is not the intended usage.
+{- | Analogous to @Maybe@'s @fromMaybe@: first parameter is a default to use.
+
+/Note:/ You can use @fromMaybe (HaveData a)@, even though that is not the intended usage.
+-}
 fromMaybe :: Possible a -> Maybe a -> Possible a
 fromMaybe def Nothing = def
 fromMaybe _ (Just a) = HaveData a
