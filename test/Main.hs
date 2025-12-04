@@ -18,7 +18,7 @@ main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [laws, unitTests]
+tests = testGroup "Tests" [laws, unitTests, helperTests]
 
 newtype A_Possible a = A_Possible {unwrap :: Possible a}
     deriving stock (Show, Generic, Functor)
@@ -110,3 +110,15 @@ unitTests =
                 eitherDecode "true" @?= Right (HaveData True)
             ]
         ]
+
+helperTests :: TestTree
+helperTests =
+  testGroup
+      "Test helpers"
+      [ QC.testProperty "Maybe Maybe two-way" $ \(p' :: A_Possible Bool) ->
+          let p = unwrap p'
+           in p === fromMaybeMaybe (toMaybeMaybe p)
+      , QC.testProperty "Single Maybe two-way with default" $ \(p' :: A_Possible Bool) ->
+          let p = unwrap p'
+           in p === fromMaybe p (toMaybe p)
+      ]
