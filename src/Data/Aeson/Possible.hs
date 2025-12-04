@@ -1,5 +1,5 @@
 {- |
-Three-valued possible types for use with `aeson`.
+Three-valued possible types for use with [aeson](https://hackage.haskell.org/package/aeson)
 
 Useful for use in PATCH endpoints: use in records which have 'ToJSON' and
 'FromJSON' instances.
@@ -22,8 +22,22 @@ the LHS data is kept unless it is missing:
 -}
 module Data.Aeson.Possible (
     Possible (..),
-    toMaybe,
+
+    -- * Utility functions
+
+    -- ** Equivalent expressiveness
+
+    -- | Keep the same level of expressiveness using nested @Maybe@s
+    toMaybeMaybe,
     fromMaybeMaybe,
+
+    -- ** With different expressiveness
+
+    -- | Helpers that either inject extra meaning ('fromMaybe'), or lose it ('toMaybe').
+    toMaybe,
+    fromMaybe,
+    fromMaybeNull,
+    fromMaybeMissing,
 ) where
 
 import Control.Applicative
@@ -58,12 +72,12 @@ instance Alternative Possible where
     Missing <|> r = r
     l@(HaveData _) <|> _ = l
 
-{- | Uses 'toMaybe' to implement `toJSON` and `toEncoding`, and `aeson`'s
+{- | Uses 'toMaybe' to implement @toJSON@ and @toEncoding@, and @aeson@'s
 'omitField' to specify when the field should be left out.
 
 /Note/ that unless the 'Possible' value is encoded as an object field it
-will be `null` even when you have a 'Missing' value.
-_e.g._ `[Missing, HaveNull, HaveData 42]` will be encoded as `[null,null,42]`
+will be @null@ even when you have a 'Missing' value.
+_e.g._ @[Missing, HaveNull, HaveData 42]@ will be encoded as @[null,null,42]@
 -}
 instance (ToJSON a) => ToJSON (Possible a) where
     toJSON = toJSON . toMaybe
@@ -72,18 +86,41 @@ instance (ToJSON a) => ToJSON (Possible a) where
     omitField HaveNull = False
     omitField (HaveData _) = False
 
--- | Uses `omittedField` to default to 'Missing'
+-- | Uses @omittedField@ to default to 'Missing'
 instance (FromJSON a) => FromJSON (Possible a) where
     parseJSON Null = pure HaveNull
     parseJSON v = fmap pure . parseJSON $ v
     omittedField = Just Missing
+
+toMaybeMaybe :: Possible a -> Maybe (Maybe a)
+toMaybeMaybe Missing = Nothing
+toMaybeMaybe HaveNull = Just Nothing
+toMaybeMaybe (HaveData a) = Just (Just a)
+
+fromMaybeMaybe :: Maybe (Maybe a) -> Possible a
+fromMaybeMaybe Nothing = Missing
+fromMaybeMaybe (Just Nothing) = HaveNull
+fromMaybeMaybe (Just (Just a)) = HaveData a
 
 toMaybe :: Possible a -> Maybe a
 toMaybe Missing = Nothing
 toMaybe HaveNull = Nothing
 toMaybe (HaveData a) = Just a
 
-fromMaybeMaybe :: Maybe (Maybe a) -> Possible a
-fromMaybeMaybe Nothing = Missing
-fromMaybeMaybe (Just Nothing) = HaveNull
-fromMaybeMaybe (Just (Just a)) = HaveData a
+{- | Analogous to @Maybe@'s @fromMaybe@: first parameter is a default to use, for example:
+
+> fromMaybe HaveNull p
+
+/Note:/ You can use @fromMaybe (HaveData a)@, even though that is not the intended usage.
+-}
+fromMaybe :: Possible a -> Maybe a -> Possible a
+fromMaybe def Nothing = def
+fromMaybe _ (Just a) = HaveData a
+
+-- | @Nothing@ becomes 'HaveNull'
+fromMaybeNull :: Maybe a -> Possible a
+fromMaybeNull = fromMaybe HaveNull
+
+-- | @Nothing@ becomes 'Missing'
+fromMaybeMissing :: Maybe a -> Possible a
+fromMaybeMissing = fromMaybe Missing
