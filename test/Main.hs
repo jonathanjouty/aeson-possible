@@ -113,12 +113,12 @@ unitTests =
 
 helperTests :: TestTree
 helperTests =
-  testGroup
-      "Test helpers"
-      [ QC.testProperty "Maybe Maybe two-way" $ \(p' :: A_Possible Bool) ->
-          let p = unwrap p'
-           in p === fromMaybeMaybe (toMaybeMaybe p)
-      , QC.testProperty "Single Maybe two-way with default" $ \(p' :: A_Possible Bool) ->
-          let p = unwrap p'
-           in p === fromMaybe p (toMaybe p)
-      ]
+    testGroup
+        "Test helpers"
+        [ QC.testProperty "Maybe Maybe two-way" $ \(p' :: A_Possible Bool) ->
+            let p = unwrap p'
+             in p === fromMaybeMaybe (toMaybeMaybe p)
+        , QC.testProperty "Single Maybe two-way with default" $ \(p' :: A_Possible Bool) ->
+            let p = unwrap p'
+             in p === fromMaybe p (toMaybe p)
+        ]
