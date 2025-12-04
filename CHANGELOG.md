@@ -1,5 +1,11 @@
 # Revision history for aeson-possible
 
+## 0.1.1.0 -- 2025-12-04
+
+* Add more utility functions for conversions
+* Tests and documentation improvements
+* Expand GHC versions tested against
+
 ## 0.1.0.1 -- 2024-06-27
 
 * Fix errors in documentation on use of Aeson `Options`
