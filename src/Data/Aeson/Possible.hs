@@ -26,11 +26,13 @@ module Data.Aeson.Possible (
     -- * Utility functions
 
     -- ** Equivalent expressiveness
+
     -- | Keep the same level of expressiveness using nested @Maybe@s
     toMaybeMaybe,
     fromMaybeMaybe,
 
     -- ** With different expressiveness
+
     -- | Helpers that either inject extra meaning ('fromMaybe'), or lose it ('toMaybe').
     toMaybe,
     fromMaybe,
