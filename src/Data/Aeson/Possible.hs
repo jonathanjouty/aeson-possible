@@ -26,10 +26,12 @@ module Data.Aeson.Possible (
     -- * Utility functions
 
     -- ** Equivalent expressiveness
+    -- | Keep the same level of expressiveness using nested @Maybe@s
     toMaybeMaybe,
     fromMaybeMaybe,
 
     -- ** With different expressiveness
+    -- | Helpers that either inject extra meaning ('fromMaybe'), or lose it ('toMaybe').
     toMaybe,
     fromMaybe,
     fromMaybeNull,
@@ -103,7 +105,9 @@ toMaybe Missing = Nothing
 toMaybe HaveNull = Nothing
 toMaybe (HaveData a) = Just a
 
-{- | Analogous to @Maybe@'s @fromMaybe@: first parameter is a default to use.
+{- | Analogous to @Maybe@'s @fromMaybe@: first parameter is a default to use, for example:
+
+> fromMaybe HaveNull p
 
 /Note:/ You can use @fromMaybe (HaveData a)@, even though that is not the intended usage.
 -}
@@ -111,10 +115,10 @@ fromMaybe :: Possible a -> Maybe a -> Possible a
 fromMaybe def Nothing = def
 fromMaybe _ (Just a) = HaveData a
 
--- | @Nothing@ uses 'HaveNull'
+-- | @Nothing@ becomes 'HaveNull'
 fromMaybeNull :: Maybe a -> Possible a
 fromMaybeNull = fromMaybe HaveNull
 
--- | @Nothing@ uses 'Missing'
+-- | @Nothing@ becomes 'Missing'
 fromMaybeMissing :: Maybe a -> Possible a
 fromMaybeMissing = fromMaybe Missing
