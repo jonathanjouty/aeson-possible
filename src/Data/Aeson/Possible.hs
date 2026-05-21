@@ -25,6 +25,12 @@ module Data.Aeson.Possible (
 
     -- * Utility functions
 
+    -- ** TODO
+    possible,
+    isHaveData,
+    isHaveNull,
+    isMissing,
+
     -- ** Equivalent expressiveness
 
     -- | Keep the same level of expressiveness using nested @Maybe@s
@@ -63,6 +69,11 @@ instance Applicative Possible where
     Missing <*> _ = Missing
     _ <*> Missing = Missing
 
+instance Monad Possible where
+    Missing >>= _ = Missing
+    HaveNull >>= _ = HaveNull
+    HaveData x >>= k = k x
+
 {- | Similar to the @Alternative Maybe@ instance, picks the leftmost 'HaveData'
 value.
 -}
@@ -91,6 +102,23 @@ instance (FromJSON a) => FromJSON (Possible a) where
     parseJSON Null = pure HaveNull
     parseJSON v = fmap pure . parseJSON $ v
     omittedField = Just Missing
+
+possible :: b -> (a -> b) -> Possible a -> b
+possible b _ Missing = b
+possible b _ HaveNull = b
+possible _ f (HaveData a) = f a
+
+isHaveData :: Possible a -> Bool
+isHaveData (HaveData _) = True
+isHaveData _ = False
+
+isHaveNull :: Possible a -> Bool
+isHaveNull HaveNull = True
+isHaveNull _ = False
+
+isMissing :: Possible a -> Bool
+isMissing Missing = True
+isMissing _ = False
 
 toMaybeMaybe :: Possible a -> Maybe (Maybe a)
 toMaybeMaybe Missing = Nothing
