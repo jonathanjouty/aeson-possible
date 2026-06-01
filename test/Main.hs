@@ -22,7 +22,7 @@ tests = testGroup "Tests" [laws, unitTests, helperTests]
 
 newtype A_Possible a = A_Possible {unwrap :: Possible a}
     deriving stock (Show, Generic, Functor)
-    deriving newtype (Eq, Applicative, Alternative)
+    deriving newtype (Eq, Applicative, Alternative, Monad)
 
 instance (Arbitrary a) => Arbitrary (A_Possible a) where
     arbitrary =
@@ -50,6 +50,19 @@ laws =
             (Proxy :: Proxy Int)
             (Proxy :: Proxy Int)
             (\_ fu1 fu2 -> fu1 == fu2)
+        , testMonadLaws
+            (Proxy :: Proxy (A_Possible))
+            (Proxy :: Proxy Int)
+            (Proxy :: Proxy Int)
+            (Proxy :: Proxy Int)
+            (Proxy :: Proxy Int)
+            (\_ fu1 fu2 -> fu1 == fu2)
+        , testMaybeMonadLaws
+            (Proxy :: Proxy (A_Possible))
+            (Proxy :: Proxy Int)
+            (Proxy :: Proxy Int)
+            (\_ fu1 fu2 -> fu1 == fu2)
+            (A_Possible Missing)
         , testGroup
             "Alternative is as documented"
             -- Should not need testing as it is quite simple, but just to be sure
